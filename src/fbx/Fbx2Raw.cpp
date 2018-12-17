@@ -235,6 +235,11 @@ static void ReadMesh(RawModel &raw, FbxScene *pScene, FbxNode *pNode, const std:
                     toVec3f(fbxMatInfo->colSpecular), fbxMatInfo->shininess));
             }
         }
+        
+        if( materialName.Compare( "ignore" ) == 0 ){
+            polygonVertexIndex += 3;
+            continue;
+        }
 
         RawVertex rawVertices[3];
         bool vertexTransparency = false;
@@ -969,13 +974,19 @@ bool LoadFBXFile(RawModel &raw, const char *fbxFileName, const char *textureExte
     // superfluous and cause a lot of people a lot of trouble. Luckily we can get rid of them by
     // converting to CM here (which just gets rid of the scaling), and then we pre-multiply the
     // scale factor into every vertex position (and related attributes) instead.
+    
+    // JUST NO !
+    /*
     FbxSystemUnit sceneSystemUnit = pScene->GetGlobalSettings().GetSystemUnit();
     if (sceneSystemUnit != FbxSystemUnit::cm) {
         FbxSystemUnit::cm.ConvertScene(pScene);
     }
     // this is always 0.01, but let's opt for clarity.
     scaleFactor = FbxSystemUnit::m.GetConversionFactorFrom(FbxSystemUnit::cm);
-
+     
+    */
+    scaleFactor = 1.0f;
+    
     ReadNodeHierarchy(raw, pScene, pScene->GetRootNode(), 0, "");
     ReadNodeAttributes(raw, pScene, pScene->GetRootNode(), textureLocations);
     ReadAnimations(raw, pScene);
